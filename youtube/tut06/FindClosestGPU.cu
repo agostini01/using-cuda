@@ -32,10 +32,21 @@ int FindClosestGPU (float3* points, int* indices, int count) {
 
     // Invoke kernel
     FindClosest<<<(count/32)+1, 32>>>(dev_points, dev_indices, count);
-
-    // Wait for kernel
-
+    
     // Copy data back
+    if (cudaMemcpy(indices, dev_indices, sizeof(int) * count, cudaMemcpyDeviceToHost)!=cudaSuccess)
+    {
+        cout<< "Could not copy back from device" << endl;
+        cudaFree(dev_points);
+        cudaFree(dev_indices);
+        delete[] dev_points;
+        delete[] dev_indices;
+        return 1;
+    }
+
+    // Cleanup
+    delete[] dev_points;
+    delete[] dev_indices;
 
     return 0;
 }
