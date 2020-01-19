@@ -8,6 +8,7 @@
 
 NVARCHSUPPORT = -arch=sm_30
 
+NVCFLAGS = -Xcompiler -Ofast
 OBJS=FindClosestCPU.o FindClosestGPU.o main.o
 
 all : app
@@ -15,15 +16,14 @@ all : app
 app : $(OBJS)
 	nvcc $(NVARCHSUPPORT) $^ -o $@ 
 
-
 FindClosestGPU.o : FindClosestGPU.cu FindClosestGPU.h
-	nvcc -o $@ $(NVARCHSUPPORT) -c $<
+	nvcc -o $@ $(NVARCHSUPPORT) $(NVCFLAGS) -c $<
 
 FindClosestCPU.o : FindClosestCPU.cc FindClosestCPU.h
-	nvcc -o $@ -c $<
+	nvcc -o $@ $(NVCFLAGS) -c $<
 
 main.o : main.cc
-	nvcc -o $@ -c $<
+	nvcc -o $@ $(NVCFLAGS) -c $<
 
 .PHONY: clean
 clean:

@@ -27,8 +27,8 @@ int main(int argc, char const *argv[])
         points[i].z = (float) ((rand() % 10000) - 5000);
     }
 
-    auto fastestTime=chrono::high_resolution_clock::now();
 
+    if(false){
     // CPU RUN =================================================================
     // Run throught the algorithm several times
     cout << "Collecting CPU runtime..." << endl;
@@ -44,6 +44,7 @@ int main(int argc, char const *argv[])
     }
     cout << endl;
     
+    }
     // CPU opt RUN =============================================================
     // Run throught the algorithm several times
     cout << "Collecting CPU opt runtime..." << endl;
