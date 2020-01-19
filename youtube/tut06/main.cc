@@ -2,7 +2,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <stdlib.h>
-#include <ctime>
+#include <chrono>
 
 #include "FindClosestCPU.h"
 #include "FindClosestGPU.h"
@@ -27,48 +27,67 @@ int main(int argc, char const *argv[])
         points[i].z = (float) ((rand() % 10000) - 5000);
     }
 
-    long fastestTime;
+    auto fastestTime=chrono::high_resolution_clock::now();
+
+    // CPU RUN =================================================================
     // Run throught the algorithm several times
-    cout << "Collecting fastest CPU runtime..." << endl;
-    fastestTime = 100000000;
-
+    cout << "Collecting CPU runtime..." << endl;
     for (int q = 0; q < NSAMPLES; q++)
     {
         // Time the run
-        long startTime = clock();
+        auto startTime = chrono::high_resolution_clock::now();
         FindClosestCPU(points, indexOfClosest, count);
-        long finishTime = clock();
+        auto finishTime = chrono::high_resolution_clock::now();
 
-        long currentTime = finishTime - startTime;
-        cout << "Run "<< q << "\ttook " << currentTime/CLOCKS_PER_SEC*1000 << "ms" << endl;
-
-        if (currentTime < fastestTime)
-            fastestTime = currentTime;
+        auto currentTime = chrono::duration_cast<chrono::microseconds>(finishTime - startTime);
+        cout << "Run " << q << "\ttook " << currentTime.count() << "us" << endl;
     }
-    cout << "!!! Fastest CPU time: " << fastestTime << "ms" << endl<<endl;
+    cout << endl;
     
-    cout << "Collecting fastest CPU opt runtime..." << endl;
-    fastestTime = 100000000;
+    // CPU opt RUN =============================================================
+    // Run throught the algorithm several times
+    cout << "Collecting CPU opt runtime..." << endl;
     for (int q = 0; q < NSAMPLES; q++)
     {
         // Time the run
-        long startTime = clock();
+        auto startTime = chrono::high_resolution_clock::now();
         FindClosestCPUopt(points, indexOfClosest, count);
-        long finishTime = clock();
+        auto finishTime = chrono::high_resolution_clock::now();
 
-        long currentTime = finishTime - startTime;
-        cout << "Run "<< q << "\ttook " << currentTime/CLOCKS_PER_SEC*1000 << "ms" << endl;
-
-        if (currentTime < fastestTime)
-            fastestTime = currentTime;
+        auto currentTime = chrono::duration_cast<chrono::microseconds>(finishTime - startTime);
+        cout << "Run " << q << "\ttook " << currentTime.count() << "us" << endl;
     }
-    cout << "!!! Fastest CPU time: " << fastestTime << "ms" << endl<<endl;
+    cout << endl;
+
 
     for (int i = 0; i < 5; i++)
     {
         cout << "Point: " << i
              << "\tClosest to point: " << indexOfClosest[i] << endl;
     }
+    cout<<endl;
+    
+    // GPU RUN =================================================================
+    // Run throught the algorithm several times
+    cout << "Collecting GPU runtime..." << endl;
+    for (int q = 0; q < NSAMPLES; q++)
+    {
+        // Time the run
+        auto startTime = chrono::high_resolution_clock::now();
+        FindClosestGPU(points, indexOfClosest, count);
+        auto finishTime = chrono::high_resolution_clock::now();
+
+        auto currentTime = chrono::duration_cast<chrono::microseconds>(finishTime - startTime);
+        cout << "Run " << q << "\ttook " << currentTime.count() << "us" << endl;
+    }
+    cout << endl;
+    
+    for (int i = 0; i < 5; i++)
+    {
+        cout << "Point: " << i
+             << "\tClosest to point: " << indexOfClosest[i] << endl;
+    }
+    cout<<endl;
 
     delete[] indexOfClosest;
     delete[] points;

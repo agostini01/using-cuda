@@ -45,8 +45,8 @@ int FindClosestGPU (float3* points, int* indices, int count) {
     }
 
     // Cleanup
-    delete[] dev_points;
-    delete[] dev_indices;
+    cudaFree(dev_points);
+    cudaFree(dev_indices);
 
     return 0;
 }
