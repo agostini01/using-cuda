@@ -4,5 +4,6 @@
 #include "cuda_runtime.h"
 
 void FindClosestCPU (float3* points, int* indices, int count);
+void FindClosestCPUopt (float3* points, int* indices, int count);
 
 #endif //FINDCLOSESTCPU_H

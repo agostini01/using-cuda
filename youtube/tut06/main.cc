@@ -7,6 +7,8 @@
 #include "FindClosestCPU.h"
 #include "FindClosestGPU.h"
 
+#define NSAMPLES 5
+
 using namespace std;
 
 
@@ -25,11 +27,12 @@ int main(int argc, char const *argv[])
         points[i].z = (float) ((rand() % 10000) - 5000);
     }
 
+    long fastestTime;
     // Run throught the algorithm several times
     cout << "Collecting fastest CPU runtime..." << endl;
-    long fastestTime = 100000000;
+    fastestTime = 100000000;
 
-    for (int q = 0; q < 20; q++)
+    for (int q = 0; q < NSAMPLES; q++)
     {
         // Time the run
         long startTime = clock();
@@ -37,7 +40,24 @@ int main(int argc, char const *argv[])
         long finishTime = clock();
 
         long currentTime = finishTime - startTime;
-        cout << "Run "<< q << "\ttook " << currentTime << "ms" << endl;
+        cout << "Run "<< q << "\ttook " << currentTime/CLOCKS_PER_SEC*1000 << "ms" << endl;
+
+        if (currentTime < fastestTime)
+            fastestTime = currentTime;
+    }
+    cout << "!!! Fastest CPU time: " << fastestTime << "ms" << endl<<endl;
+    
+    cout << "Collecting fastest CPU opt runtime..." << endl;
+    fastestTime = 100000000;
+    for (int q = 0; q < NSAMPLES; q++)
+    {
+        // Time the run
+        long startTime = clock();
+        FindClosestCPUopt(points, indexOfClosest, count);
+        long finishTime = clock();
+
+        long currentTime = finishTime - startTime;
+        cout << "Run "<< q << "\ttook " << currentTime/CLOCKS_PER_SEC*1000 << "ms" << endl;
 
         if (currentTime < fastestTime)
             fastestTime = currentTime;
