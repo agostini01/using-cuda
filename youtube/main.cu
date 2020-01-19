@@ -11,9 +11,8 @@ __global__ void AddInts(int * a, int* b, int count)
     int id = blockIdx.x * blockDim.x * threadIdx.x;
     if (id < count)
     {
-        a[id]+b[id];
+        a[id]+=b[id];
     }
-
 }
 
 int main(int argc, char const *argv[])
@@ -72,14 +71,14 @@ int main(int argc, char const *argv[])
         cout<< "Could not copy back from device" << endl;
         cudaFree(d_a);
         cudaFree(d_b);
-        return 1;
         delete[] h_a;
         delete[] h_b;
+        return 1;
     }
 
     for (int i = 0; i < 5; i++)
     {
-        cout <<"It is: " h_a[i] << endl;
+        cout <<"It is: " << h_a[i] << endl;
     }
     
 
