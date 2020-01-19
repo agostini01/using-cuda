@@ -1,22 +1,28 @@
-NVARCHSUPPORT = -arch=sm_30 \
-	-gencode=arch=compute_50,code=sm_50 \
-	-gencode=arch=compute_52,code=sm_52 \
-	-gencode=arch=compute_60,code=sm_60 \
-	-gencode=arch=compute_61,code=sm_61 \
-	-gencode=arch=compute_70,code=sm_70 \
-	-gencode=arch=compute_70,code=compute_70
+# NVARCHSUPPORT = -arch=sm_30 \
+# 	-gencode=arch=compute_50,code=sm_50 \
+# 	-gencode=arch=compute_52,code=sm_52 \
+# 	-gencode=arch=compute_60,code=sm_60 \
+# 	-gencode=arch=compute_61,code=sm_61 \
+# 	-gencode=arch=compute_70,code=sm_70 \
+# 	-gencode=arch=compute_70,code=compute_70
 
-OBJS=FindClosestCPU.o main.o
+NVARCHSUPPORT = -arch=sm_30
+
+OBJS=FindClosestCPU.o FindClosestGPU.o main.o
 
 all : app
 
 app : $(OBJS)
 	nvcc $(NVARCHSUPPORT) $^ -o $@ 
 
-main.o : main.cu
+
+FindClosestGPU.o : FindClosestGPU.cu FindClosestGPU.h
 	nvcc -o $@ $(NVARCHSUPPORT) -c $<
 
 FindClosestCPU.o : FindClosestCPU.cc FindClosestCPU.h
+	nvcc -o $@ -c $<
+
+main.o : main.cc
 	nvcc -o $@ -c $<
 
 .PHONY: clean
