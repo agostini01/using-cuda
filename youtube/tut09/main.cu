@@ -10,7 +10,8 @@ __global__ void MyKernel(unsigned long long * time) {
     __shared__ float shared[32];
 
     //const int idx = 0; //perform a broadcast
-    const int idx = blockIdx.x; // perform a broadcast
+    //const int idx = blockIdx.x; // perform a broadcast
+    const int idx = threadIdx.x; // no bank conflict
 
     // time the access
     unsigned long long startTime = clock();
