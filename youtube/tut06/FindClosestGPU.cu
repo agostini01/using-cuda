@@ -31,7 +31,7 @@ int FindClosestGPU (float3* points, int* indices, int count) {
     }
 
     // Invoke kernel
-    FindClosest<<<(count/32)+1, 32>>>(dev_points, dev_indices, count);
+    FindClosestOpt<<<(count/512)+1, 512>>>(dev_points, dev_indices, count);
 
     // Copy data back
     if (cudaMemcpy(indices, dev_indices, sizeof(int) * count, cudaMemcpyDeviceToHost)!=cudaSuccess)
@@ -58,7 +58,6 @@ __global__ void FindClosest (float3* points, int* indices, int count) {
 
     if (idx < count)
     {
-
         float3 thisPoint = points[idx];
         float distToClosest = 3.40282e38f; // float.max value for initial dist
 
@@ -78,5 +77,37 @@ __global__ void FindClosest (float3* points, int* indices, int count) {
                 indices[idx] = i;
             }
         }
+    }
+}
+
+__global__ void FindClosestOpt (float3* points, int* indices, int count) {
+    if (count <= 1) return;
+
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+    if (idx < count)
+    {
+
+        float3 thisPoint = points[idx];
+        float distToClosest = 3.40282e38f; // float.max value for initial dist
+        int tmp;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (i == idx) continue;
+            float dist = 
+                (thisPoint.x - points[i].x) *
+                (thisPoint.x - points[i].x) +
+                (thisPoint.y - points[i].y) *
+                (thisPoint.y - points[i].y) +
+                (thisPoint.z - points[i].z) *
+                (thisPoint.z - points[i].z)
+            ;
+            if(dist < distToClosest) {
+                distToClosest = dist;
+                tmp = i;
+            }
+        }
+        indices[idx] = tmp;
     }
 }

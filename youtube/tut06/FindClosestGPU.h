@@ -6,5 +6,6 @@
 int FindClosestGPU (float3* points, int* indices, int count);
 
 __global__ void FindClosest (float3* points, int* indices, int count);
+__global__ void FindClosestOpt (float3* points, int* indices, int count);
 
 #endif //FINDCLOSESTGPU_H

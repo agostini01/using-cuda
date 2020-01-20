@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
 {
     srand (time(NULL));
 
-    const int count = 10000;
+    const int count = 30000; //  30K
     int * indexOfClosest = new int[count];
     float3 * points = new float3[count];
 
@@ -43,8 +43,6 @@ int main(int argc, char const *argv[])
         cout << "Run " << q << "\ttook " << currentTime.count() << "us" << endl;
     }
     cout << endl;
-    
-    }
     // CPU opt RUN =============================================================
     // Run throught the algorithm several times
     cout << "Collecting CPU opt runtime..." << endl;
@@ -67,9 +65,12 @@ int main(int argc, char const *argv[])
              << "\tClosest to point: " << indexOfClosest[i] << endl;
     }
     cout<<endl;
+    }
+    
     
     // GPU RUN =================================================================
     // Run throught the algorithm several times
+    cudaDeviceReset();
     cout << "Collecting GPU runtime..." << endl;
     for (int q = 0; q < NSAMPLES; q++)
     {
