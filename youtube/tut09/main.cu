@@ -23,7 +23,7 @@ __global__ void MyKernelHomogeneos(unsigned long long * time) {
     // const int idx = threadIdx.x*32; // worst bank conflict - all threads access same bank
     // const int idx = threadIdx.x*128; // same worst bank conflict
 
-    const int idx = threadIdx.x*2; // current test
+    const int idx = threadIdx.x*4; // current test
     if (idx < sharedSize) {
 
     // time the access an homogeneous array
@@ -33,6 +33,31 @@ __global__ void MyKernelHomogeneos(unsigned long long * time) {
 
     time[threadIdx.x] = (finishTime - startTime);
     }
+}
+
+struct test{
+    double x,y,w,z;
+
+    // Adding padding here offsets the 4-way bank conflict
+    // at the cost of wasting shared memory
+    // comment it out to test difference
+    // double padding;
+};
+
+__global__ void MyKernelDS(unsigned long long * time) {
+    const unsigned sharedSize = 1024;
+    __shared__ test shared[sharedSize];
+    unsigned long long startTime;
+    unsigned long long finishTime;
+
+    const int idx = threadIdx.x*1; // current test
+
+    // time the access an homogeneous array
+    startTime = clock();
+    shared[idx].x++;
+    finishTime = clock();
+
+    time[threadIdx.x] = (finishTime - startTime);
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +74,8 @@ int main(int argc, char const *argv[])
     {
         cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
         cudaDeviceSetSharedMemConfig(cudaSharedMemBankSizeEightByte);
-        MyKernelHomogeneos<<< 1,nThreads >>>(d_time);
+        // MyKernelHomogeneos<<< 1,nThreads >>>(d_time);
+        MyKernelDS<<< 1,nThreads >>>(d_time);
         cudaMemcpy(&time, d_time, sizeof(unsigned long long)*nThreads, cudaMemcpyDeviceToHost);
 
         cout << "Time:\t";
@@ -64,4 +90,3 @@ int main(int argc, char const *argv[])
     cudaDeviceReset();
     return 0;
 }
-
