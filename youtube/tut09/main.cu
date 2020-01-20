@@ -1,8 +1,6 @@
 #include <iostream>
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include <stdlib.h>
-#include <chrono>
 
 using namespace std;
 
@@ -39,6 +37,19 @@ struct test{
     double x,y,w,z;
 
     // Adding padding here offsets the 4-way bank conflict
+    // at the cost of wasting shared memory
+    // comment it out to test difference
+    // double padding;
+};
+
+struct test2{
+    // This will present a 32-way bank conflict if no padding is added
+    //    with:
+    //              __shared__ test2 shared[32];
+    //              shared[threadIdx.x].x[0]++;
+    double x[32];
+
+    // Adding padding here offsets the 32-way bank conflict
     // at the cost of wasting shared memory
     // comment it out to test difference
     // double padding;
