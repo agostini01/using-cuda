@@ -16,15 +16,15 @@ all : app
 app : $(OBJS)
 	nvcc $(NVARCHSUPPORT) $^ -o $@ 
 
-FindClosestGPU.o : FindClosestGPU.cu FindClosestGPU.h
+FindClosestGPU.o : FindClosestGPU.cu FindClosestGPU.h config.h
 	nvcc -o $@ $(NVARCHSUPPORT) $(NVCFLAGS) -c $<
 
 FindClosestCPU.o : FindClosestCPU.cc FindClosestCPU.h
 	nvcc -o $@ $(NVCFLAGS) -c $<
 
-main.o : main.cc
+main.o : main.cc config.h
 	nvcc -o $@ $(NVCFLAGS) -c $<
 
 .PHONY: clean
 clean:
-	rm -f app *.o
+	rm -f app *.o *.prof
