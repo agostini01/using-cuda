@@ -16,7 +16,7 @@ all : app
 app : $(OBJS)
 	nvcc $(NVARCHSUPPORT) $^ -o $@ 
 
-main.o : main.cc config.h
+main.o : main.cu
 	nvcc -o $@ $(NVARCHSUPPORT) $(NVCFLAGS) -c $<
 
 .PHONY: clean
