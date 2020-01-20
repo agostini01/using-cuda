@@ -9,7 +9,8 @@ using namespace std;
 __global__ void MyKernel(unsigned long long * time) {
     __shared__ float shared[32];
 
-    const int idx = 0; //perform a broadcast
+    //const int idx = 0; //perform a broadcast
+    const int idx = blockIdx.x; // perform a broadcast
 
     // time the access
     unsigned long long startTime = clock();
